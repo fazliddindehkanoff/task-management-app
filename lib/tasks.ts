@@ -7,7 +7,8 @@ export async function getAllTasks(): Promise<Task[]> {
 
 export async function getTaskById(id: number): Promise<Task | null> {
   const db = await getDb();
-  return db.get('SELECT * FROM tasks WHERE id = ?', id);
+  const task = await db.get('SELECT * FROM tasks WHERE id = ?', id);
+  return task as Task | null;
 }
 
 export async function createTask(task: Omit<Task, 'id'>): Promise<Task> {
@@ -17,7 +18,7 @@ export async function createTask(task: Omit<Task, 'id'>): Promise<Task> {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [task.title, task.description, task.completed ? 1 : 0, task.priority, task.dueDate?.toISOString(), task.completedPomodoros, task.workDuration, task.breakDuration]
   );
-  return { ...task, id: result.lastID };
+  return { ...task, id: result.lastID as number };
 }
 
 export async function updateTask(task: Task): Promise<void> {

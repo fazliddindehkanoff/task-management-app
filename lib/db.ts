@@ -1,7 +1,8 @@
 import sqlite3 from 'sqlite3';
+import { Database } from 'sqlite';
 import { open } from 'sqlite';
 
-let db: any = null;
+let db: Database | null = null;
 
 export async function getDb() {
   if (!db) {
