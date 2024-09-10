@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
-
-const filePath = path.join(process.cwd(), 'tasks.json')
+import { getTaskById, updateTask, deleteTask } from '@/lib/tasks'
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const tasks = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-  const task = tasks.find((t: Task) => t.id === parseInt(params.id))
-  
+  const task = await getTaskById(parseInt(params.id))
   if (task) {
     return NextResponse.json(task)
   } else {
@@ -18,32 +13,29 @@ export async function GET(
   }
 }
 
+
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   const updatedTask = await request.json()
-  const tasks = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-
-  const index = tasks.findIndex((t: Task) => t.id === parseInt(params.id))
-  if (index !== -1) {
-    tasks[index] = { ...tasks[index], ...updatedTask }
-    fs.writeFileSync(filePath, JSON.stringify(tasks, null, 2))
-    return NextResponse.json(tasks[index])
+  const task = await getTaskById(parseInt(params.id))
+  if (task) {
+    await updateTask(updatedTask)
+    return NextResponse.json(updatedTask)
   } else {
     return NextResponse.json({ error: 'Task not found' }, { status: 404 })
   }
 }
 
+
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const tasks = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-  const index = tasks.findIndex((t: Task) => t.id === parseInt(params.id))
-  if (index !== -1) {
-    tasks.splice(index, 1)
-    fs.writeFileSync(filePath, JSON.stringify(tasks, null, 2))
+  const task = await getTaskById(parseInt(params.id))
+  if (task) {
+    await deleteTask(parseInt(params.id))
     return NextResponse.json({ message: 'Task deleted' })
   } else {
     return NextResponse.json({ error: 'Task not found' }, { status: 404 })
