@@ -1,0 +1,1 @@
+type BreakSound = 'rain' | 'waves' | 'birds' | 'forest'

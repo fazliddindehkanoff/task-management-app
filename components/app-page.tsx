@@ -25,26 +25,12 @@ import {
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
-type Priority = 'Low' | 'Medium' | 'High'
-
-type Task = {
-  id: number;
-  title: string;
-  description: string;
-  completed: boolean;
-  priority: Priority;
-  dueDate: Date | null;
-  completedPomodoros: number;
-  workDuration: number;
-  breakDuration: number;
-}
 
 export function AppPage() {
   const router = useRouter()

@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const tasks = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-  const task = tasks.find((t: any) => t.id === parseInt(params.id))
+  const task = tasks.find((t: Task) => t.id === parseInt(params.id))
   
   if (task) {
     return NextResponse.json(task)
@@ -25,7 +25,7 @@ export async function PUT(
   const updatedTask = await request.json()
   const tasks = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-  const index = tasks.findIndex((t: any) => t.id === parseInt(params.id))
+  const index = tasks.findIndex((t: Task) => t.id === parseInt(params.id))
   if (index !== -1) {
     tasks[index] = { ...tasks[index], ...updatedTask }
     fs.writeFileSync(filePath, JSON.stringify(tasks, null, 2))
@@ -40,7 +40,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const tasks = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-  const index = tasks.findIndex((t: any) => t.id === parseInt(params.id))
+  const index = tasks.findIndex((t: Task) => t.id === parseInt(params.id))
   if (index !== -1) {
     tasks.splice(index, 1)
     fs.writeFileSync(filePath, JSON.stringify(tasks, null, 2))
