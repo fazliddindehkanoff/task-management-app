@@ -257,7 +257,7 @@ export function AppPage() {
                         <Calendar
                           mode="single"
                           selected={newTask.dueDate ? new Date(newTask.dueDate) : new Date()}
-                          onSelect={(date) => setNewTask({...newTask, dueDate: date ? date.toISOString() : null})}
+                          onSelect={(date) => setNewTask({...newTask, dueDate: date ? date : null})}
                           initialFocus
                         />
                       </PopoverContent>
@@ -413,7 +413,7 @@ export function AppPage() {
             <PaginationItem>
               <PaginationPrevious 
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
+                isActive={currentPage === 1}
               />
             </PaginationItem>
             {[...Array(totalPages)].map((_, i) => (
@@ -429,7 +429,7 @@ export function AppPage() {
             <PaginationItem>
               <PaginationNext 
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
+                isActive={currentPage === totalPages}
               />
             </PaginationItem>
           </PaginationContent>
