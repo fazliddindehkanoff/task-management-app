@@ -39,7 +39,7 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
         }
         const taskData: Task = await response.json()
         setTask(taskData)
-        setTime(taskData.workDuration * 60)
+        setTime(taskData.workduration * 60)
         setIsBreak(false)
       } catch (error) {
         console.error('Error fetching task:', error)
@@ -79,7 +79,15 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
   const updateTask = useCallback(async (updates: Partial<Task>) => {
     if (!task) return
 
-    const updatedTask = { ...task, ...updates }
+    let updatedTask = { ...task, ...updates }
+
+    // Adjust the date if it's being updated
+    if (updates.duedate) {
+      const date = new Date(updates.duedate)
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+      updatedTask.duedate = new Date(date.toISOString().split('T')[0])
+    }
+
     setTask(updatedTask)
 
     try {
@@ -111,10 +119,10 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
 
   const handleMarkComplete = () => {
     if (task) {
-      const newCompletedPomodoros = task.completed ? task.completedPomodoros : task.completedPomodoros + 1;
+      const newCompletedPomodoros = task.completed ? task.completedpomodoros : task.completedpomodoros + 1;
       updateTask({
         completed: !task.completed,
-        completedPomodoros: newCompletedPomodoros
+        completedpomodoros: newCompletedPomodoros
       });
     }
   };
@@ -130,16 +138,16 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
         notificationAudioRef.current.play().catch(e => console.error("Error playing notification sound:", e))
       }
       if (isBreak) {
-        setTime(task?.workDuration ? task.workDuration * 60 : 25 * 60)
+        setTime(task?.workduration ? task.workduration * 60 : 25 * 60)
         setIsBreak(false)
         if (breakAudioRef.current) {
           breakAudioRef.current.pause()
         }
       } else {
-        setTime(task?.breakDuration ? task.breakDuration * 60 : 5 * 60)
+        setTime(task?.breakduration ? task.breakduration * 60 : 5 * 60)
         setIsBreak(true)
         if (task) {
-          updateTask({ completedPomodoros: task.completedPomodoros + 1 })
+          updateTask({ completedpomodoros: task.completedpomodoros + 1 })
         }
       }
       setIsActive(false)
@@ -170,7 +178,7 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
   }
 
   const resetTimer = () => {
-    setTime(task?.workDuration ? task.workDuration * 60 : 25 * 60)
+    setTime(task?.workduration ? task.workduration * 60 : 25 * 60)
     setIsActive(false)
     setIsBreak(false)
     // Stop break music if it's playing
@@ -213,8 +221,8 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
   if (!task) return <div>Task not found</div>
 
   const progress = isBreak
-    ? ((task.breakDuration * 60 - time) / (task.breakDuration * 60)) * 100
-    : ((task.workDuration * 60 - time) / (task.workDuration * 60)) * 100
+    ? ((task.breakduration * 60 - time) / (task.breakduration * 60)) * 100
+    : ((task.workduration * 60 - time) / (task.workduration * 60)) * 100
 
   return (
     <div className="flex h-screen relative">
@@ -274,15 +282,15 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start text-left font-normal">
-                  {task.dueDate ? format(task.dueDate, 'PPP') : <span>Pick a due date</span>}
+                  {task.duedate ? format(new Date(task.duedate), 'PPP') : <span>Pick a due date</span>}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={task.dueDate || undefined}
-                  onSelect={(date) => updateTask({ dueDate: date || null })}
+                  selected={task.duedate ? new Date(task.duedate) : undefined}
+                  onSelect={(date) => updateTask({ duedate: date || null })}
                   initialFocus
                 />
               </PopoverContent>
@@ -297,8 +305,8 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
                 <Input
                   id="workDuration"
                   type="number"
-                  value={task.workDuration}
-                  onChange={(e) => updateTask({ workDuration: parseInt(e.target.value) })}
+                  value={task.workduration}
+                  onChange={(e) => updateTask({ workduration: parseInt(e.target.value) })}
                   min="1"
                 />
               </div>
@@ -307,8 +315,8 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
                 <Input
                   id="breakDuration"
                   type="number"
-                  value={task.breakDuration}
-                  onChange={(e) => updateTask({ breakDuration: parseInt(e.target.value) })}
+                  value={task.breakduration}
+                  onChange={(e) => updateTask({ breakduration: parseInt(e.target.value) })}
                   min="1"
                 />
               </div>
@@ -380,7 +388,7 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
         </div>
         <Badge variant="outline" className="text-lg p-2">
           <Clock className="mr-2 h-5 w-5" />
-          Completed Pomodoros: {task.completedPomodoros}
+          Completed Pomodoros: {task.completedpomodoros}
         </Badge>
       </div>
     </div>

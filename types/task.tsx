@@ -5,8 +5,8 @@ type Task = {
   description: string;
   completed: boolean;
   priority: Priority;
-  dueDate: Date | null;
-  completedPomodoros: number;
-  workDuration: number;
-  breakDuration: number;
+  duedate: Date | null;
+  completedpomodoros: number;
+  workduration: number;
+  breakduration: number;
 }

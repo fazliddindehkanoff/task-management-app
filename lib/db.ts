@@ -1,37 +1,25 @@
-import { Database, open } from 'sqlite';
-import sqlite3 from 'sqlite3';
+import { sql } from '@vercel/postgres';
 
-let db: Database | null = null;
+let isDbInitialized = false;
 
-export async function getDb(): Promise<Database> {
-  if (db) {
-    return db;
+export async function getDb(): Promise<void> {
+  if (isDbInitialized) {
+    return;
   }
 
-  // Use in-memory database for production, file-based for development
-  const filename = process.env.NODE_ENV === 'production' ? ':memory:' : './mydb.sqlite';
+  await sql`
+    CREATE TABLE IF NOT EXISTS tasks (
+      id SERIAL PRIMARY KEY,
+      title TEXT NOT NULL,
+      description TEXT,
+      completed BOOLEAN DEFAULT FALSE,
+      priority TEXT,
+      dueDate TIMESTAMP,
+      completedPomodoros INTEGER DEFAULT 0,
+      workDuration INTEGER DEFAULT 25,
+      breakDuration INTEGER DEFAULT 5
+    )
+  `;
 
-  db = await open({
-    filename,
-    driver: sqlite3.Database
-  });
-
-  // If using in-memory database, set up your schema here
-  if (process.env.NODE_ENV === 'production') {
-    await db.exec(`
-      CREATE TABLE IF NOT EXISTS tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        description TEXT,
-        completed INTEGER,
-        priority TEXT,
-        dueDate TEXT,
-        completedPomodoros INTEGER,
-        workDuration INTEGER,
-        breakDuration INTEGER
-      )
-    `);
-  }
-
-  return db;
+  isDbInitialized = true;
 }

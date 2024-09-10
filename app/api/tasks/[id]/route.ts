@@ -18,13 +18,19 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const updatedTask = await request.json()
-  const task = await getTaskById(parseInt(params.id))
-  if (task) {
-    await updateTask(updatedTask)
-    return NextResponse.json(updatedTask)
-  } else {
-    return NextResponse.json({ error: 'Task not found' }, { status: 404 })
+  const id = parseInt(params.id, 10);
+  const updates = await request.json();
+
+  try {
+    const updatedTask = await updateTask(id, updates);
+    if (updatedTask) {
+      return NextResponse.json(updatedTask);
+    } else {
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    }
+  } catch (error) {
+    console.error('Error updating task:', error);
+    return NextResponse.json({ error: 'Failed to update task' }, { status: 500 });
   }
 }
 

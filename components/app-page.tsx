@@ -44,10 +44,10 @@ export function AppPage() {
     description: '',
     completed: false,
     priority: 'Medium',
-    dueDate: null,
-    completedPomodoros: 0,
-    workDuration: 25,
-    breakDuration: 5
+    duedate: null,
+    completedpomodoros: 0,
+    workduration: 25,
+    breakduration: 5
   })
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
@@ -76,38 +76,37 @@ export function AppPage() {
   }, [])
 
   const addTask = async () => {
-    const updatedTasks = [...tasks, newTask]
-    setTasks(updatedTasks)
-    setIsModalOpen(false)
-    setNewTask({
-      id: Date.now(),
-      title: '',
-      description: '',
-      completed: false,
-      priority: 'Medium',
-      dueDate: null,
-      completedPomodoros: 0,
-      workDuration: 25,
-      breakDuration: 5
-    })
-
-    // Save tasks to the server
     try {
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedTasks),
-      })
+        body: JSON.stringify(newTask),
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to save tasks')
+        throw new Error('Failed to create task');
       }
+      let createdTask = await response.json()
+      setTasks([...tasks, createdTask]);
+      setIsModalOpen(false);
+      setNewTask({
+        id: Date.now(),
+        title: '',
+        description: '',
+        completed: false,
+        priority: 'Medium',
+        duedate: null,
+        completedpomodoros: 0,
+        workduration: 25,
+        breakduration: 5
+      });
     } catch (error) {
-      console.error('Error saving tasks:', error)
+      console.error('Error creating task:', error);
       // You might want to show an error message to the user here
     }
-  }
+  };
 
   const toggleTask = (id: number) => {
     setTasks(tasks.map(task => 
@@ -154,11 +153,11 @@ export function AppPage() {
         ? priorityOrder[a.priority] - priorityOrder[b.priority]
         : priorityOrder[b.priority] - priorityOrder[a.priority];
     } else {
-      if (!a.dueDate) return sortOrder === 'asc' ? 1 : -1;
-      if (!b.dueDate) return sortOrder === 'asc' ? -1 : 1;
+      if (!a.duedate) return sortOrder === 'asc' ? 1 : -1;
+      if (!b.duedate) return sortOrder === 'asc' ? -1 : 1;
       return sortOrder === 'asc' 
-        ? a.dueDate.getTime() - b.dueDate.getTime()
-        : b.dueDate.getTime() - a.dueDate.getTime();
+        ? a.duedate.getTime() - b.duedate.getTime()
+        : b.duedate.getTime() - a.duedate.getTime();
     }
   });
 
@@ -250,14 +249,14 @@ export function AppPage() {
                       <PopoverTrigger asChild>
                         <Button variant="outline">
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          {newTask.dueDate ? format(newTask.dueDate, 'PPP') : <span>Pick a due date</span>}
+                          {newTask.duedate ? format(newTask.duedate, 'PPP') : <span>Pick a due date</span>}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={newTask.dueDate ? new Date(newTask.dueDate) : new Date()}
-                          onSelect={(date) => setNewTask({...newTask, dueDate: date ? date : null})}
+                          selected={newTask.duedate ? new Date(newTask.duedate) : new Date()}
+                          onSelect={(date) => setNewTask({...newTask, duedate: date ? date : null})}
                           initialFocus
                         />
                       </PopoverContent>
@@ -272,8 +271,8 @@ export function AppPage() {
                     <Input
                       id="workDuration"
                       type="number"
-                      value={newTask.workDuration}
-                      onChange={(e) => setNewTask({...newTask, workDuration: parseInt(e.target.value)})}
+                      value={newTask.workduration}
+                      onChange={(e) => setNewTask({...newTask, workduration: parseInt(e.target.value)})}
                       min="1"
                     />
                   </div>
@@ -282,8 +281,8 @@ export function AppPage() {
                     <Input
                       id="breakDuration"
                       type="number"
-                      value={newTask.breakDuration}
-                      onChange={(e) => setNewTask({...newTask, breakDuration: parseInt(e.target.value)})}
+                      value={newTask.breakduration}
+                      onChange={(e) => setNewTask({...newTask, breakduration: parseInt(e.target.value)})}
                       min="1"
                     />
                   </div>
@@ -376,17 +375,17 @@ export function AppPage() {
                 </Badge>
               </TableCell>
               <TableCell>
-                {task.dueDate && (
+                {task.duedate && (
                   <Badge variant="outline">
                     <CalendarIcon className="mr-1 h-3 w-3" />
-                    {format(task.dueDate, 'MMM d, yyyy')}
+                    {format(task.duedate, 'MMM d, yyyy')}
                   </Badge>
                 )}
               </TableCell>
               <TableCell>
                 <Badge variant="outline">
                   <Clock className="mr-1 h-3 w-3" />
-                  {task.completedPomodoros}
+                  {task.completedpomodoros}
                 </Badge>
               </TableCell>
               <TableCell>
