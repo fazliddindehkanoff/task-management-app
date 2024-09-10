@@ -20,8 +20,14 @@ export async function createTask(task: Task): Promise<Task> {
       title, description, completed, priority, dueDate, 
       completedPomodoros, workDuration, breakDuration
     ) VALUES (
-      ${task.title}, ${task.description}, ${task.completed}, ${task.priority},
-      ${task.duedate}, ${task.completedpomodoros}, ${task.workduration}, ${task.breakduration}
+      ${task.title},
+      ${task.description},
+      ${task.completed},
+      ${task.priority},
+      ${task.duedate ? task.duedate.toISOString() : null},
+      ${task.completedpomodoros},
+      ${task.workduration},
+      ${task.breakduration}
     )
     RETURNING *
   `;
@@ -110,6 +116,6 @@ export async function updateTask(id: number, updates: Partial<Task>): Promise<Ta
 
 export async function deleteTask(id: number): Promise<boolean> {
   await getDb();
-  const result = await sql`DELETE FROM tasks WHERE id = ${id}`;
+  await sql`DELETE FROM tasks WHERE id = ${id}`;
   return true;
 }

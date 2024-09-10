@@ -3,7 +3,7 @@ import { createTask, getAllTasks } from '@/lib/tasks'
 
 export async function POST(request: Request) {
   const tasks = await request.json()
-  let createdTask = await createTask(tasks)
+  const createdTask = await createTask(tasks)
   return NextResponse.json(createdTask)
 }
 

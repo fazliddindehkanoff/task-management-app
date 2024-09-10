@@ -88,7 +88,7 @@ export function AppPage() {
       if (!response.ok) {
         throw new Error('Failed to create task');
       }
-      let createdTask = await response.json()
+      const createdTask = await response.json()
       setTasks([...tasks, createdTask]);
       setIsModalOpen(false);
       setNewTask({

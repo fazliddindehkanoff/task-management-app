@@ -79,7 +79,7 @@ export function AppTaskIdPage({ params }: { params: { id: string } }) {
   const updateTask = useCallback(async (updates: Partial<Task>) => {
     if (!task) return
 
-    let updatedTask = { ...task, ...updates }
+    const updatedTask = { ...task, ...updates }
 
     // Adjust the date if it's being updated
     if (updates.duedate) {
